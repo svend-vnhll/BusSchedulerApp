@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.coroutineScope
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -52,8 +53,10 @@ class FullScheduleFragment: Fragment() {
             view.findNavController().navigate(action)
         }
         recyclerView.adapter = busStopAdapter
-        GlobalScope.launch(Dispatchers.IO) {
-            busStopAdapter.submitList(viewModel.fullSchedule())
+        lifecycle.coroutineScope.launch {
+            viewModel.fullSchedule().collect() {
+                busStopAdapter.submitList(it)
+            }
         }
     }
 
